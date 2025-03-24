@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Game</title>
+    <style>
+        :root {
+            --primary-color: #6c63ff;
+            --secondary-color: #4a45c0;
+            --bg-color: #f9f9f9;
+            --text-color: #333;
+            --card-bg: #fff;
+            --correct-color: #4caf50;
+            --incorrect-color: #f44336;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1,
+        h2,
+        h3 {
+            margin-bottom: 1rem;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        input,
+        select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .login-register {
+            max-width: 400px;
+            margin: 2rem auto;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            background-color: #e0e0e0;
+        }
+
+        .tab.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .tema-card {
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .tema-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .fase-card {
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .fase-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .quiz-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .pergunta {
+            margin-bottom: 2rem;
+        }
+
+        .alternativa {
+            display: block;
+            padding: 15px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .alternativa:hover {
+            background-color: #f0f0f0;
+        }
+
+        .alternativa.selected {
+            background-color: #e3f2fd;
+            border-color: var(--primary-color);
+        }
+
+        .alternativa.correct {
+            background-color: var(--correct-color);
+            color: white;
+        }
+
+        .alternativa.incorrect {
+            background-color: var(--incorrect-color);
+            color: white;
+        }
+
+        .score {
+            font-size: 1.5rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.5s;
+        }
+
+        .admin-panel {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+        }
+
+        .sidebar {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 10px;
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .main-content {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .add-form {
+            max-width: 600px;
+        }
+
+        .alternativa-input {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .alternativa-input input[type="radio"] {
+            margin-right: 10px;
+            width: auto;
+        }
+
+        .alternativa-input input[type="text"] {
+            flex: 1;
+        }
+
+        .file-upload {
+            display: inline-block;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .file-upload input {
+            display: none;
+        }
+
+        .notification {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .tab{
+            border-radius: 10px;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 768px) {
+            .admin-panel {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Quiz Game</h1>
+    </header>
+
+    <div class="container">
+        <!-- Authentication Section -->
+        <div id="auth-section" class="login-register">
+            <div class="tabs">
+                <div class="tab active" data-tab="login">Login</div>
+                <div class="tab" data-tab="register">Register</div>
+            </div>
+
+            <div id="login-form" class="card">
+                <h2>Login</h2>
+                <div class="form-group">
+                    <label for="login-username">Username</label>
+                    <input type="text" id="login-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button id="login-btn">Login</button>
+                <div id="login-error" class="notification error hidden"></div>
+            </div>
+
+            <div id="register-form" class="card hidden">
+                <h2>Register</h2>
+                <div class="form-group">
+                    <label for="register-username">Username</label>
+                    <input type="text" id="register-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Email</label>
+                    <input type="email" id="register-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" required>
+                </div>
+                <button id="register-btn">Register</button>
+                <div id="register-error" class="notification error hidden"></div>
+                <div id="register-success" class="notification success hidden"></div>
+            </div>
+        </div>
+
+        <!-- Main App Section (visible after login) -->
+        <div id="app-section" class="hidden">
+            <div class="tabs">
+                <div class="tab active" data-tab="play">Play</div>
+                <div class="tab" data-tab="admin">Admin</div>
+            </div>
+
+            <!-- Play Section -->
+            <div id="play-section">
+                <!-- Temas Selection -->
+                <div id="temas-selection" class="card">
+                    <h2>Select a Theme</h2>
+                    <div id="temas-container" class="dashboard">
+                        <!-- Temas will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Fases Selection (hidden initially) -->
+                <div id="fases-selection" class="card hidden">
+                    <button id="back-to-temas" class="back-btn">&larr; Back to Themes</button>
+                    <h2 id="selected-tema-title">Phases for:</h2>
+                    <div id="fases-container" class="dashboard">
+                        <!-- Fases will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Quiz Section (hidden initially) -->
+                <div id="quiz-section" class="card hidden">
+                    <button id="back-to-fases" class="back-btn">&larr; Back to Phases</button>
+                    <h2 id="selected-fase-title">Quiz:</h2>
+
+                    <div class="progress-bar">
+                        <div id="quiz-progress" class="progress-fill"></div>
+                    </div>
+
+                    <div id="pergunta-container" class="quiz-container">
+                        <!-- Current question will be displayed here -->
+                    </div>
+
+                    <div class="quiz-controls">
+                        <button id="check-answer" class="hidden">Check Answer</button>
+                        <button id="next-question" class="hidden">Next Question</button>
+                        <button id="finish-quiz" class="hidden">Finish Quiz</button>
+                    </div>
+                </div>
+
+                <!-- Results Section (hidden initially) -->
+                <div id="results-section" class="card hidden">
+                    <h2>Quiz Results</h2>
+                    <div class="score">
+                        You scored: <span id="final-score">0</span> out of <span id="total-questions">0</span>
+                    </div>
+                    <button id="back-to-fases-from-results">Play Another Phase</button>
+                </div>
+            </div>
+
+            <!-- Admin Section -->
+            <div id="admin-section" class="hidden">
+                <div class="admin-panel">
+                    <div class="sidebar">
+                        <h3>Admin Menu</h3>
+                        <ul class="sidebar-menu">
+                            <li><a href="#" class="active" data-section="temas-admin">Themes</a></li>
+                            <li><a href="#" data-section="fases-admin">Phases</a></li>
+                            <li><a href="#" data-section="perguntas-admin">Questions</a></li>
+                            <li><a href="#" data-section="upload-perguntas">Upload Questions (PDF)</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="main-content">
+                        <!-- Temas Admin -->
+                        <div id="temas-admin" class="admin-content">
+                            <h2>Manage Themes</h2>
+                            <div class="add-form">
+                                <h3>Add New Theme</h3>
+                                <div class="form-group">
+                                    <label for="tema-nome">Name</label>
+                                    <input type="text" id="tema-nome" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="tema-descricao">Description</label>
+                                    <input type="text" id="tema-descricao">
+                                </div>
+                                <button id="add-tema-btn">Add Theme</button>
+                            </div>
+                            <h3>Your Themes</h3>
+                            <div id="admin-temas-list">
+                                <!-- Temas will be loaded here -->
+                            </div>
+                        </div>
+
+                        <!-- Fases Admin -->
+                        <div id="fases-admin" class="admin-content hidden">
+                            <h2>Manage Phases</h2>
+                            <div class="add-form">
+                                <h3>Add New Phase</h3>
+                                <div class="form-group">
+                                    <label for="fase-tema">Theme</label>
+                                    <select id="fase-tema">
+                                        <!-- Themes will be loaded here -->
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="fase-nome">Name</label>
+                                    <input type="text" id="fase-nome" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="fase-descricao">Description</label>
+                                    <input type="text" id="fase-descricao">
+                                </div>
+                                <button id="add-fase-btn">Add Phase</button>
+                            </div>
+                            <h3>Your Phases</h3>
+                            <div id="admin-fases-list">
+                                <!-- Fases will be loaded here -->
+                            </div>
+                        </div>
+
+                        <!-- Perguntas Admin -->
+                        <div id="perguntas-admin" class="admin-content hidden">
+                            <h2>Manage Questions</h2>
+
+
+
+                            <div class="add-form">
+                                <h3>Add New Question</h3>
+                                <div class="form-group">
+                                    <label for="pergunta-fase">Phase</label>
+                                    <select id="pergunta-fase">
+                                        <!-- Add a disabled default option to show the phase details -->
+                                        <option value="" disabled selected>Select a Phase (ID will be shown)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="pergunta-texto">Question Text</label>
+                                    <input type="text" id="pergunta-texto" required>
+                                </div>
+                                <h4>Alternatives (Choose one correct answer)</h4>
+                                <div class="form-group">
+                                    <div class="alternativa-input">
+                                        <input type="radio" name="correta" id="alt1-correct" value="0" checked>
+                                        <input type="text" id="alt1-texto" placeholder="Alternative 1" required>
+                                    </div>
+                                    <div class="alternativa-input">
+                                        <input type="radio" name="correta" id="alt2-correct" value="1">
+                                        <input type="text" id="alt2-texto" placeholder="Alternative 2" required>
+                                    </div>
+                                    <div class="alternativa-input">
+                                        <input type="radio" name="correta" id="alt3-correct" value="2">
+                                        <input type="text" id="alt3-texto" placeholder="Alternative 3" required>
+                                    </div>
+                                    <div class="alternativa-input">
+                                        <input type="radio" name="correta" id="alt4-correct" value="3">
+                                        <input type="text" id="alt4-texto" placeholder="Alternative 4" required>
+                                    </div>
+                                </div>
+                                <button id="add-pergunta-btn">Add Question</button>
+                            </div>
+                            <h3>Your Questions</h3>
+                            <div id="admin-perguntas-list">
+                                <!-- Questions will be loaded here -->
+                            </div>
+                        </div>
+
+                        <!-- Upload Questions from PDF -->
+                        <div id="upload-perguntas" class="admin-content hidden">
+                            <h2>Upload Questions from PDF</h2>
+                            <div class="add-form">
+                                <div class="form-group">
+                                    <label for="pdf-fase">Select Phase</label>
+                                    <select id="pdf-fase">
+                                        <!-- Add a disabled default option to show the phase details -->
+                                        <option value="" disabled selected>Select a Phase (ID will be shown)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="file-upload">
+                                    <input type="file" id="pdf-file" accept=".pdf">
+                                    <span>Choose PDF file</span>
+                                </label>
+                                <div id="pdf-filename">No file selected</div>
+                            </div>
+                            <button id="upload-pdf-btn">Upload PDF and Create Questions</button>
+                            <div id="upload-progress" class="notification hidden"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+       
+        const API_URL = 'http://127.0.0.1:8003';
+        let token = localStorage.getItem('token');
+        let currentUser = null;
+        let currentTema = null;
+        let currentFase = null;
+        let currentPerguntas = [];
+        let currentPerguntaIndex = 0;
+        let score = 0;
+        let selectedAlternativa = null;
+
+        
+        const authSection = document.getElementById('auth-section');
+        const appSection = document.getElementById('app-section');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const loginError = document.getElementById('login-error');
+        const registerError = document.getElementById('register-error');
+        const registerSuccess = document.getElementById('register-success');
+        const playSection = document.getElementById('play-section');
+        const adminSection = document.getElementById('admin-section');
+        const temasSelection = document.getElementById('temas-selection');
+        const fasesSelection = document.getElementById('fases-selection');
+        const quizSection = document.getElementById('quiz-section');
+        const resultsSection = document.getElementById('results-section');
+
+      
+        document.addEventListener('DOMContentLoaded', init);
+
+        async function init() {
+            setupEventListeners();
+            checkAuthentication();
+        }
+
+        function setupEventListeners() {
+           
+            document.getElementById('add-tema-btn').addEventListener('click', addTema);
+            document.getElementById('add-fase-btn').addEventListener('click', addFase);
+            document.getElementById('add-pergunta-btn').addEventListener('click', addPergunta);
+            document.getElementById('upload-pdf-btn').addEventListener('click', uploadPDF);
+
+            document.querySelector('.tab[data-tab="admin"]').addEventListener('click', () => {
+                loadTemasForSelect('fase-tema');
+                loadFasesForSelect('pergunta-fase');
+                loadFasesForSelect('pdf-fase');
+            });
+
+
+   
+            document.getElementById('pdf-file').addEventListener('change', (e) => {
+                const filename = e.target.files[0]?.name || 'No file selected';
+                document.getElementById('pdf-filename').textContent = filename;
+            });
+
+           
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const sectionName = link.getAttribute('data-section');
+
+                    document.querySelectorAll('.sidebar-menu a').forEach(l => {
+                        l.classList.remove('active');
+                    });
+                    link.classList.add('active');
+
+                    document.querySelectorAll('.admin-content').forEach(section => {
+                        section.classList.add('hidden');
+                    });
+                    document.getElementById(sectionName).classList.remove('hidden');
+
+                  
+                    if (sectionName === 'temas-admin') {
+                        loadAdminTemas();
+                    } else if (sectionName === 'fases-admin') {
+                        loadTemasForSelect('fase-tema');
+                        loadAdminFases();
+                    } else if (sectionName === 'perguntas-admin') {
+                        loadFasesForSelect('pergunta-fase');
+                        loadAdminPerguntas();
+                    } else if (sectionName === 'upload-perguntas') {
+                        loadFasesForSelect('pdf-fase');
+                    }
+                });
+            });
+        }
+
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.getAttribute('data-tab');
+
+              
+                if (tabName === 'play' || tabName === 'admin') {
+                    document.querySelectorAll('.tab').forEach(t => {
+                        if (t.getAttribute('data-tab') === 'play' || t.getAttribute('data-tab') === 'admin') {
+                            t.classList.remove('active');
+                        }
+                    });
+                    tab.classList.add('active');
+
+                    if (tabName === 'play') {
+                        playSection.classList.remove('hidden');
+                        adminSection.classList.add('hidden');
+                        loadTemas();
+                    } else {
+                        playSection.classList.add('hidden');
+                        adminSection.classList.remove('hidden');
+                        loadAdminData();
+                    }
+                    return;
+                }
+
+      
+                document.querySelectorAll('.tab').forEach(t => {
+                    if (t.getAttribute('data-tab') === 'login' || t.getAttribute('data-tab') === 'register') {
+                        t.classList.remove('active');
+                    }
+                });
+                tab.classList.add('active');
+
+                if (tabName === 'login') {
+                    loginForm.classList.remove('hidden');
+                    registerForm.classList.add('hidden');
+                } else {
+                    loginForm.classList.add('hidden');
+                    registerForm.classList.remove('hidden');
+                }
+            });
+        });
+
+
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionName = link.getAttribute('data-section');
+
+                document.querySelectorAll('.sidebar-menu a').forEach(l => {
+                    l.classList.remove('active');
+                });
+                link.classList.add('active');
+
+                document.querySelectorAll('.admin-content').forEach(section => {
+                    section.classList.add('hidden');
+                });
+                document.getElementById(sectionName).classList.remove('hidden');
+
+     
+                if (sectionName === 'temas-admin') {
+                    loadAdminTemas();
+                } else if (sectionName === 'fases-admin') {
+                    loadTemasForSelect('fase-tema');
+                    loadAdminFases();
+                } else if (sectionName === 'perguntas-admin') {
+                    loadFasesForSelect('pergunta-fase');
+                    loadAdminPerguntas();
+                } else if (sectionName === 'upload-perguntas') {
+                    loadFasesForSelect('pdf-fase');
+                }
+            });
+        });
+
+ 
+        document.getElementById('back-to-temas').addEventListener('click', () => {
+            fasesSelection.classList.add('hidden');
+            temasSelection.classList.remove('hidden');
+        });
+
+        document.getElementById('back-to-fases').addEventListener('click', () => {
+            quizSection.classList.add('hidden');
+            fasesSelection.classList.remove('hidden');
+        });
+
+        document.getElementById('back-to-fases-from-results').addEventListener('click', () => {
+            resultsSection.classList.add('hidden');
+            fasesSelection.classList.remove('hidden');
+        });
+
+      
+        document.getElementById('login-btn').addEventListener('click', login);
+
+    
+        document.getElementById('register-btn').addEventListener('click', register);
+
+    
+        document.getElementById('check-answer').addEventListener('click', checkAnswer);
+        document.getElementById('next-question').addEventListener('click', nextQuestion);
+        document.getElementById('finish-quiz').addEventListener('click', finishQuiz);
+
+      
+        document.getElementById('add-tema-btn').addEventListener('click', addTema);
+        document.getElementById('add-fase-btn').addEventListener('click', addFase);
+        document.getElementById('add-pergunta-btn').addEventListener('click', addPergunta);
+        document.getElementById('upload-pdf-btn').addEventListener('click', uploadPDF);
+
+     
+        document.getElementById('pdf-file').addEventListener('change', (e) => {
+            const filename = e.target.files[0]?.name || 'No file selected';
+            document.getElementById('pdf-filename').textContent = filename;
+        });
+
+
+        function checkAuthentication() {
+            if (token) {
+                fetchCurrentUser();
+            } else {
+                authSection.classList.remove('hidden');
+                appSection.classList.add('hidden');
+            }
+        }
+
+        async function fetchCurrentUser() {
+            try {
+                const response = await fetch(`${API_URL}/users/me/`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    currentUser = await response.json();
+                    authSection.classList.add('hidden');
+                    appSection.classList.remove('hidden');
+                    loadTemas();
+                } else {
+                    // Token is invalid or expired
+                    localStorage.removeItem('token');
+                    token = null;
+                    authSection.classList.remove('hidden');
+                    appSection.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Error fetching user:', error);
+                authSection.classList.remove('hidden');
+                appSection.classList.add('hidden');
+            }
+        }
+
+        async function login() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+
+            if (!username || !password) {
+                loginError.textContent = 'Please enter both username and password';
+                loginError.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/token`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    token = data.access_token;
+                    localStorage.setItem('token', token);
+                    loginError.classList.add('hidden');
+                    fetchCurrentUser();
+                } else {
+                    loginError.textContent = data.detail || 'Login failed. Please check your credentials.';
+                    loginError.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                loginError.textContent = 'Login failed. Please try again later.';
+                loginError.classList.remove('hidden');
+            }
+        }
+
+        async function register() {
+            const username = document.getElementById('register-username').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+
+            if (!username || !email || !password) {
+                registerError.textContent = 'Please fill out all fields';
+                registerError.classList.remove('hidden');
+                registerSuccess.classList.add('hidden');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/users/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username,
+                        email,
+                        password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    registerSuccess.textContent = 'Registration successful! You can now login.';
+                    registerSuccess.classList.remove('hidden');
+                    registerError.classList.add('hidden');
+
+                    // Switch to login tab
+                    document.querySelector('.tab[data-tab="login"]').click();
+                } else {
+                    const errorMsg = data.detail || Object.values(data).flat().join(', ');
+                    registerError.textContent = errorMsg || 'Registration failed.';
+                    registerError.classList.remove('hidden');
+                    registerSuccess.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                registerError.textContent = 'Registration failed. Please try again later.';
+                registerError.classList.remove('hidden');
+                registerSuccess.classList.add('hidden');
+            }
+        }
+
+        async function loadTemas() {
+            try {
+                const response = await fetch(`${API_URL}/temas/`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const temas = await response.json();
+                    const temasContainer = document.getElementById('temas-container');
+                    temasContainer.innerHTML = '';
+
+                    if (temas.length === 0) {
+                        temasContainer.innerHTML = '<p>No themes available yet. Create some in the Admin section.</p>';
+                        return;
+                    }
+
+                    temas.forEach(tema => {
+                        const temaCard = document.createElement('div');
+                        temaCard.className = 'card tema-card';
+                        temaCard.innerHTML = `
+                            <h3>${tema.nome}</h3>
+                            <p>${tema.descricao || 'No description'}</p>
+                        `;
+                        temaCard.addEventListener('click', () => {
+                            currentTema = tema;
+                            document.getElementById('selected-tema-title').textContent = `Phases for: ${tema.nome}`;
+                            loadFases(tema.id);
+                            temasSelection.classList.add('hidden');
+                            fasesSelection.classList.remove('hidden');
+                        });
+                        temasContainer.appendChild(temaCard);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading temas:', error);
+            }
+        }
+
+        async function loadFases(temaId) {
+            try {
+                const response = await fetch(`${API_URL}/temas/${temaId}/fases/`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const fases = await response.json();
+                    const fasesContainer = document.getElementById('fases-container');
+                    fasesContainer.innerHTML = '';
+
+                    if (fases.length === 0) {
+                        fasesContainer.innerHTML = '<p>No phases available for this theme yet. Create some in the Admin section.</p>';
+                        return;
+                    }
+
+                    fases.forEach(fase => {
+                        const faseCard = document.createElement('div');
+                        faseCard.className = 'card fase-card';
+                        faseCard.innerHTML = `
+                            <h3>${fase.nome}</h3>
+                            <p>${fase.descricao || 'No description'}</p>
+                        `;
+                        faseCard.addEventListener('click', () => {
+                            currentFase = fase;
+                            document.getElementById('selected-fase-title').textContent = `Quiz: ${fase.nome}`;
+                            loadPerguntas(fase.id);
+                            fasesSelection.classList.add('hidden');
+                            quizSection.classList.remove('hidden');
+                        });
+                        fasesContainer.appendChild(faseCard);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading fases:', error);
+            }
+        }
+
+        async function loadPerguntas(faseId) {
+            try {
+                const response = await fetch(`${API_URL}/fases/${faseId}/perguntas/`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const perguntas = await response.json();
+
+                    if (perguntas.length === 0) {
+                        const perguntaContainer = document.getElementById('pergunta-container');
+                        perguntaContainer.innerHTML = '<p>No questions available for this phase yet. Create some in the Admin section.</p>';
+                        document.getElementById('check-answer').classList.add('hidden');
+                        document.getElementById('next-question').classList.add('hidden');
+                        document.getElementById('finish-quiz').classList.remove('hidden');
+                        return;
+                    }
+
+                    currentPerguntas = perguntas;
+                    currentPerguntaIndex = 0;
+                    score = 0;
+                    selectedAlternativa = null;
+
+                    showPergunta(currentPerguntas[currentPerguntaIndex]);
+                    updateQuizProgress();
+                }
+            } catch (error) {
+                console.error('Error loading perguntas:', error);
+            }
+        }
+
+        function showPergunta(pergunta) {
+            const perguntaContainer = document.getElementById('pergunta-container');
+            perguntaContainer.innerHTML = '';
+
+            const perguntaElement = document.createElement('div');
+            perguntaElement.className = 'pergunta';
+            perguntaElement.innerHTML = `
+                <h3>${pergunta.texto}</h3>
+                <div class="alternativas">
+                    ${pergunta.alternativas.map((alt, index) => `
+                        <div class="alternativa" data-index="${index}">
+                            ${alt.texto}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            perguntaContainer.appendChild(perguntaElement);
+
+            // Add click event to alternatives
+            perguntaContainer.querySelectorAll('.alternativa').forEach(alt => {
+                alt.addEventListener('click', () => {
+                    // Remove selected class from all alternatives
+                    perguntaContainer.querySelectorAll('.alternativa').forEach(a => {
+                        a.classList.remove('selected');
+                    });
+
+                    // Add selected class to this alternative
+                    alt.classList.add('selected');
+
+                    // Save the selected alternative
+                    selectedAlternativa = parseInt(alt.getAttribute('data-index'));
+
+                    // Show check answer button
+                    document.getElementById('check-answer').classList.remove('hidden');
+                });
+            });
+
+            // Hide buttons
+            document.getElementById('check-answer').classList.add('hidden');
+            document.getElementById('next-question').classList.add('hidden');
+            document.getElementById('finish-quiz').classList.add('hidden');
+        }
+
+        function checkAnswer() {
+            const pergunta = currentPerguntas[currentPerguntaIndex];
+            const perguntaContainer = document.getElementById('pergunta-container');
+            const alternatives = perguntaContainer.querySelectorAll('.alternativa');
+            const correctIndex = pergunta.alternativas.findIndex(alt => alt.correta);
+
+            // Mark correct and incorrect
+            alternatives.forEach((alt, index) => {
+                if (index === correctIndex) {
+                    alt.classList.add('correct');
+                } else if (index === selectedAlternativa) {
+                    alt.classList.add('incorrect');
+                }
+            });
+
+            // Update score
+            if (selectedAlternativa === correctIndex) {
+                score++;
+            }
+
+            // Show next button
+            document.getElementById('check-answer').classList.add('hidden');
+
+            if (currentPerguntaIndex < currentPerguntas.length - 1) {
+                document.getElementById('next-question').classList.remove('hidden');
+            } else {
+                document.getElementById('finish-quiz').classList.remove('hidden');
+            }
+        }
+
+        function nextQuestion() {
+            currentPerguntaIndex++;
+
+            if (currentPerguntaIndex < currentPerguntas.length) {
+                showPergunta(currentPerguntas[currentPerguntaIndex]);
+                updateQuizProgress();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function finishQuiz() {
+            // Show results
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('total-questions').textContent = currentPerguntas.length;
+
+            quizSection.classList.add('hidden');
+            resultsSection.classList.remove('hidden');
+        }
+
+        function updateQuizProgress() {
+            const progress = ((currentPerguntaIndex + 1) / currentPerguntas.length) * 100;
+            document.getElementById('quiz-progress').style.width = `${progress}%`;
+        }
+
+        function loadAdminData() {
+            document.querySelectorAll('.admin-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById('temas-admin').classList.remove('hidden');
+            loadAdminTemas();
+        }
+
+        async function loadAdminTemas() {
+            try {
+                const response = await fetch(`${API_URL}/temas/`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const temas = await response.json();
+                    const temasListContainer = document.getElementById('admin-temas-list');
+                    temasListContainer.innerHTML = '';
+
+                    if (temas.length === 0) {
+                        temasListContainer.innerHTML = '<p>No themes yet. Create one using the form above.</p>';
+                        return;
+                    }
+
+                    temas.forEach(tema => {
+                        const temaItem = document.createElement('div');
+                        temaItem.className = 'card';
+                        temaItem.innerHTML = `
+                            <h3>${tema.nome}</h3>
+                            <p>${tema.descricao || 'No description'}</p>
+                            <button class="delete-tema-btn" data-id="${tema.id}">Delete</button>
+                        `;
+
+                        temasListContainer.appendChild(temaItem);
+                    });
+
+                    // Add event listeners to delete buttons
+                    document.querySelectorAll('.delete-tema-btn').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            const temaId = e.target.getAttribute('data-id');
+                            await deleteTema(temaId);
+                        });
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading admin temas:', error);
+            }
+        }
+
+        async function loadTemasForSelect(selectId) {
+            try {
+                const response = await fetch(`${API_URL}/temas/`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const temas = await response.json();
+                    const selectElement = document.getElementById(selectId);
+                    selectElement.innerHTML = '';
+
+                    temas.forEach(tema => {
+                        const option = document.createElement('option');
+                        option.value = tema.id;
+                        option.textContent = tema.nome;
+                        selectElement.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading temas for select:', error);
+            }
+        }
+
+        async function loadFasesForSelect(selectId) {
+            try {
+                const response = await fetch(`${API_URL}/temas/`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const temas = await response.json();
+                    const selectElement = document.getElementById(selectId);
+
+                    // Clear previous options
+                    selectElement.innerHTML = `
+                <option value="" disabled selected>Select a Theme and Phase</option>
+            `;
+
+                    if (temas.length === 0) {
+                        const option = document.createElement('option');
+                        option.value = '';
+                        option.textContent = 'No themes available - create one first';
+                        selectElement.appendChild(option);
+                        return;
+                    }
+
+                    // Create optgroups for each theme
+                    temas.forEach(tema => {
+                        const themeOptgroup = document.createElement('optgroup');
+                        themeOptgroup.label = `${tema.nome} Theme`;
+
+                        // If the theme has phases, add them as options
+                        if (tema.fases && tema.fases.length > 0) {
+                            tema.fases.forEach(fase => {
+                                const option = document.createElement('option');
+                                option.value = fase.id;
+                                option.textContent = `${fase.nome}`;
+                                themeOptgroup.appendChild(option);
+                            });
+                        } else {
+                            const option = document.createElement('option');
+                            option.value = '';
+                            option.textContent = 'No phases for this theme';
+                            option.disabled = true;
+                            themeOptgroup.appendChild(option);
+                        }
+
+                        selectElement.appendChild(themeOptgroup);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading phases for select:', error);
+                const selectElement = document.getElementById(selectId);
+                selectElement.innerHTML = '<option value="">Error loading themes and phases</option>';
+            }
+        }
+
+        async function loadAdminFases() {
+            try {
+                const response = await fetch(`${API_URL}/fases/`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const fases = await response.json();
+                    const fasesListContainer = document.getElementById('admin-fases-list');
+                    fasesListContainer.innerHTML = '';
+
+                    if (fases.length === 0) {
+                        fasesListContainer.innerHTML = '<p>No phases yet. Create one using the form above.</p>';
+                        return;
+                    }
+
+                    fases.forEach(fase => {
+                        const faseItem = document.createElement('div');
+                        faseItem.className = 'card';
+                        faseItem.innerHTML = `
+                            <h3>${fase.nome}</h3>
+                            <p>Theme: ${fase.tema_nome}</p>
+                            <p>${fase.descricao || 'No description'}</p>
+                            <button class="delete-fase-btn" data-id="${fase.id}">Delete</button>
+                        `;
+
+                        fasesListContainer.appendChild(faseItem);
+                    });
+
+                    // Add event listeners to delete buttons
+                    document.querySelectorAll('.delete-fase-btn').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            const faseId = e.target.getAttribute('data-id');
+                            await deleteFase(faseId);
+                        });
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading admin fases:', error);
+            }
+        }
+
+        async function loadAdminPerguntas() {
+            try {
+                const response = await fetch(`${API_URL}/perguntas/`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const perguntas = await response.json();
+                    const perguntasListContainer = document.getElementById('admin-perguntas-list');
+                    perguntasListContainer.innerHTML = '';
+
+                    if (perguntas.length === 0) {
+                        perguntasListContainer.innerHTML = '<p>No questions yet. Create one using the form above.</p>';
+                        return;
+                    }
+
+                    perguntas.forEach(pergunta => {
+                        const perguntaItem = document.createElement('div');
+                        perguntaItem.className = 'card';
+                        perguntaItem.innerHTML = `
+                            <h3>${pergunta.texto}</h3>
+                            <p>Phase: ${pergunta.fase_nome}</p>
+                            <div class="alternativas">
+                                ${pergunta.alternativas.map(alt => `
+                                    <div class="${alt.correta ? 'alternativa correct' : 'alternativa'}">
+                                        ${alt.texto}
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <button class="delete-pergunta-btn" data-id="${pergunta.id}">Delete</button>
+                        `;
+
+                        perguntasListContainer.appendChild(perguntaItem);
+                    });
+
+                    // Add event listeners to delete buttons
+                    document.querySelectorAll('.delete-pergunta-btn').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            const perguntaId = e.target.getAttribute('data-id');
+                            await deletePergunta(perguntaId);
+                        });
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading admin perguntas:', error);
+            }
+        }
+
+        async function addTema() {
+            const nome = document.getElementById('tema-nome').value;
+            const descricao = document.getElementById('tema-descricao').value;
+
+            if (!nome) {
+                alert('Please enter a name for the theme');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/temas/`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nome,
+                        descricao
+                    })
+                });
+
+                if (response.ok) {
+                    document.getElementById('tema-nome').value = '';
+                    document.getElementById('tema-descricao').value = '';
+                    loadAdminTemas();
+                    alert('Theme created successfully!');
+                } else {
+                    const error = await response.json();
+                    alert(error.detail || 'Failed to create theme');
+                }
+            } catch (error) {
+                console.error('Error creating tema:', error);
+                alert('Failed to create theme');
+            }
+        }
+
+        async function addFase() {
+            const temaId = document.getElementById('fase-tema').value;
+            const nome = document.getElementById('fase-nome').value;
+            const descricao = document.getElementById('fase-descricao').value;
+
+            if (!temaId || !nome) {
+                alert('Please select a theme and enter a name for the phase');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/temas/${temaId}/fases/`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nome,
+                        descricao
+                    })
+                });
+
+                if (response.ok) {
+                    document.getElementById('fase-nome').value = '';
+                    document.getElementById('fase-descricao').value = '';
+                    loadAdminFases();
+                    loadFasesForSelect('pergunta-fase');
+                    loadFasesForSelect('pdf-fase');
+                    alert('Phase created successfully!');
+                } else {
+                    const error = await response.json();
+                    alert(error.detail || 'Failed to create phase');
+                }
+            } catch (error) {
+                console.error('Error creating fase:', error);
+                alert('Failed to create phase');
+            }
+        }
+
+        async function addPergunta() {
+            const faseId = document.getElementById('pergunta-fase').value;
+            const texto = document.getElementById('pergunta-texto').value;
+            const corretaIndex = document.querySelector('input[name="correta"]:checked').value;
+
+            const alternativas = [
+                { texto: document.getElementById('alt1-texto').value, correta: parseInt(corretaIndex) === 0 },
+                { texto: document.getElementById('alt2-texto').value, correta: parseInt(corretaIndex) === 1 },
+                { texto: document.getElementById('alt3-texto').value, correta: parseInt(corretaIndex) === 2 },
+                { texto: document.getElementById('alt4-texto').value, correta: parseInt(corretaIndex) === 3 }
+            ];
+
+            if (!faseId || faseId === '') {
+                alert('Please select a valid phase');
+                return;
+            }
+
+            if (!texto || alternativas.some(alt => !alt.texto)) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/fases/${faseId}/perguntas/`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        texto,
+                        alternativas
+                    })
+                });
+
+                if (response.ok) {
+                    document.getElementById('pergunta-texto').value = '';
+                    document.getElementById('alt1-texto').value = '';
+                    document.getElementById('alt2-texto').value = '';
+                    document.getElementById('alt3-texto').value = '';
+                    document.getElementById('alt4-texto').value = '';
+                    document.getElementById('alt1-correct').checked = true;
+                    loadAdminPerguntas();
+                    alert('Question created successfully!');
+                } else {
+                    const error = await response.json();
+                    alert(error.detail || 'Failed to create question');
+                }
+            } catch (error) {
+                console.error('Error creating pergunta:', error);
+                alert('Failed to create question');
+            }
+        }
+
+        async function uploadPDF() {
+            const faseId = document.getElementById('pdf-fase').value;
+            const fileInput = document.getElementById('pdf-file');
+            const file = fileInput.files[0];
+
+            if (!faseId || !file) {
+                alert('Please select a phase and a PDF file');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const uploadProgress = document.getElementById('upload-progress');
+            uploadProgress.classList.remove('hidden');
+            uploadProgress.textContent = 'Uploading and processing PDF...';
+
+            try {
+                const response = await fetch(`${API_URL}/fases/${faseId}/perguntas/multiple`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    uploadProgress.textContent = `Success! Created ${result.length} questions.`;
+                    uploadProgress.className = 'notification success';
+                    document.getElementById('pdf-file').value = '';
+                    document.getElementById('pdf-filename').textContent = 'No file selected';
+                    loadAdminPerguntas();
+                } else {
+                    uploadProgress.textContent = result.detail || 'Failed to process PDF';
+                    uploadProgress.className = 'notification error';
+                }
+            } catch (error) {
+                console.error('Error uploading PDF:', error);
+                uploadProgress.textContent = 'Failed to process PDF';
+                uploadProgress.className = 'notification error';
+            }
+        }
+
+
+        async function deleteTema(temaId) {
+            if (!confirm('Are you sure you want to delete this theme? This will also delete all associated phases and questions!')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/temas/${temaId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    loadAdminTemas();
+                    alert('Theme deleted successfully!');
+                } else {
+                    const error = await response.json();
+                    alert(error.detail || 'Failed to delete theme');
+                }
+            } catch (error) {
+                console.error('Error deleting tema:', error);
+                alert('Failed to delete theme');
+            }
+        }
+
+        async function deleteFase(faseId) {
+            if (!confirm('Are you sure you want to delete this phase? This will also delete all associated questions!')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/fases/${faseId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    loadAdminFases();
+                    alert('Phase deleted successfully!');
+                } else {
+                    const error = await response.json();
+                    alert(error.detail || 'Failed to delete phase');
+                }
+            } catch (error) {
+                console.error('Error deleting fase:', error);
+                alert('Failed to delete phase');
+            }
+        }
+
+        async function deletePergunta(perguntaId) {
+            if (!confirm('Are you sure you want to delete this question?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/perguntas/${perguntaId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    loadAdminPerguntas();
+                    alert('Question deleted successfully!');
+                } else {
+                    const error = await response.json();
+                    alert(error.detail || 'Failed to delete question');
+                }
+            } catch (error) {
+                console.error('Error deleting pergunta:', error);
+                alert('Failed to delete question');
+            }
+        }
+    </script>
+</body>
+
+</html>
