@@ -14,7 +14,7 @@ services:
             - mysql_data:/var/lib/mysql
         command: --default-authentication-plugin=mysql_native_password --innodb-flush-log-at-trx-commit=0
         networks:
-            - quiz-network
+            - project_network
         healthcheck:
             test:
                 [
@@ -45,7 +45,7 @@ services:
             mysql:
                 condition: service_healthy
         networks:
-            - quiz-network
+            - project_network
 
     web:
         build: 
@@ -68,13 +68,13 @@ services:
         depends_on:
             - mysql
         networks:
-            - quiz-network
+            - project_network
         restart: always
 
 
 networks:
-    quiz-network:
-        driver: bridge
+  project_network:
+    external: true 
 
 volumes:
     mysql_data:
