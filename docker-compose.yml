@@ -52,7 +52,7 @@ services:
             context: .
             dockerfile: Dockerfile
         ports:
-            - "8003:8003"
+            - "3009:3009"
         volumes:
             - .:/app
         environment:
