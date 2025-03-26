@@ -280,6 +280,38 @@
             margin-bottom: 20px;
             border-radius: 5px;
         }
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            background-color: ffff; 
+            width: 100%;
+        }
+
+        .logo {
+            max-width: 200px; /* Limit maximum logo width */
+            width: 100%; /* Make logo responsive */
+            height: auto; /* Maintain aspect ratio */
+        }
+
+        /* Responsive adjustments */
+        @media screen and (max-width: 600px) {
+            .header {
+                padding: 0.5rem;
+            }
+
+            .logo {
+                max-width: 150px; /* Smaller logo on mobile */
+            }
+        }
+
+        @media screen and (max-width: 375px) {
+            .logo {
+                max-width: 100px; /* Even smaller logo on very small screens */
+            }
+        }
+        
 
         .success {
             background-color: #d4edda;
@@ -308,8 +340,8 @@
 </head>
 
 <body>
-    <header>
-        <h1>Quiz Game</h1>
+    <header class="header">
+        <img src="static/assets/img/edu_logo.png" alt="Quiz Game Logo" class="logo">
     </header>
 
     <div class="container">
@@ -357,7 +389,6 @@
         <!-- Main App Section (visible after login) -->
         <div id="app-section" class="hidden">
             <div class="tabs">
-                <div class="tab active" data-tab="play">Play</div>
                 <div class="tab" data-tab="admin">Admin</div>
             </div>
 
